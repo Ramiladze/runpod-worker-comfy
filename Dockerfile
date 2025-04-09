@@ -90,6 +90,19 @@ FROM base as final
 
 # Copy models from stage 2 to the final image
 COPY --from=downloader /comfyui/models /comfyui/models
+# Используем существующий образ как базу
+FROM timpietruskyblibla/runpod-worker-comfy:3.6.0-flux1-dev
 
+# Устанавливаем рабочую директорию
+WORKDIR /comfyui/custom_nodes
+
+# Устанавливаем ComfyUI-FluxTrainer
+RUN git clone https://github.com/kijai/ComfyUI-FluxTrainer.git
+
+# Устанавливаем зависимости
+RUN pip install -r ComfyUI-FluxTrainer/requirements.txt --no-deps
+
+# Оставляем остальную конфигурацию как в оригинале (если есть)
+WORKDIR /comfyui
 # Start container
 CMD ["/start.sh"]
